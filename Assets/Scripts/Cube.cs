@@ -1,16 +1,18 @@
 using UnityEngine;
 using System;
+using System.Collections;
 
 [RequireComponent(typeof(Rigidbody), typeof(Renderer), typeof(ColorChanger))]
-public class Cube : MonoBehaviour
+public class Cube : SpawnObject
 {
     private Rigidbody _rigidbody;
     private Material _material;
     private ColorChanger _colorChanger;
+    private Coroutine _counter;
 
     private bool _isFirstCollision = true;
 
-    public event Action<Cube> Collided;
+    public static event Action<Rigidbody> Destroyed;
 
     private void Awake()
     {
@@ -23,9 +25,9 @@ public class Cube : MonoBehaviour
     {
         if (collision.collider.GetComponent<Plane>() != null && _isFirstCollision)
         {
-            _colorChanger.SetRandomColor(_material);
             _isFirstCollision = false;
-            Collided?.Invoke(this);
+            _colorChanger.SetRandomColor(_material);
+            _counter = StartCoroutine(CountToDestroy());
         }
     }
 
@@ -36,5 +38,17 @@ public class Cube : MonoBehaviour
         _rigidbody.angularVelocity = Vector3.zero;
         transform.rotation = Quaternion.identity;
         _colorChanger.SetOriginalColor(_material);
+    }
+
+    private IEnumerator CountToDestroy()
+    {
+        float minDestroyTime = 2f;
+        float maxDestroyTime = 5f;
+        WaitForSeconds waitForSeconds = new(UnityEngine.Random.Range(minDestroyTime, maxDestroyTime));
+
+        yield return waitForSeconds;
+
+        Destroyed?.Invoke(_rigidbody);
+        LifeTimeEnded?.Invoke(this);
     }
 }
