@@ -1,39 +1,63 @@
 using UnityEngine;
+using UnityEngine.Pool;
+using System;
 
-public class Spawner<T> where T : SpawnObject
+public class Spawner<T> where T: SpawnObject
 {
-    private ObjectPool _pool;
-    private int _spawnedAll;
+    private T _prefab;
+    private ObjectPool<T> _pool = null;
+    private int _poolCapacity = 10;
+    private int _poolMaxSize = 100;
+    private int _spawnedAll = 0;
+    private int _created = 0;
 
-    public delegate void SpawnedAllChanged(int value);
-    public SpawnedAllChanged spawnedAllChanged;
+    public event Action<SpawnObject> OnObjectReleased;
+    public event Action<int> SpawnedAllChanged;
+    public event Action<int> CreatedChanged;
+    public event Action<int> ActiveOnSceneChanged;
 
-    public Spawner(ObjectPool pool)
+    public Spawner(T prefab)
     {
-        _pool = pool;
+        _prefab = prefab;
     }
 
-    public T Spawn()
+    public void Initialize()
     {
-        T obj = (T)_pool.Get();
+        _pool ??= new ObjectPool<T>(
+            createFunc: () => Create(_prefab),
+            actionOnGet: (obj) => obj.gameObject.SetActive(true),
+            actionOnRelease: (obj) => obj.gameObject.SetActive(false),
+            actionOnDestroy: (obj) => GameObject.Destroy(obj),
+            collectionCheck: true,
+            defaultCapacity: _poolCapacity,
+            maxSize: _poolMaxSize);
+    }
+
+    public T Get()
+    {
+        T obj = _pool.Get();
 
         _spawnedAll++;
-        spawnedAllChanged?.Invoke(_spawnedAll);
+        ActiveOnSceneChanged?.Invoke(_pool.CountActive);
+        SpawnedAllChanged?.Invoke(_spawnedAll);
+        obj.LifeTimeEnded += Realese;
 
         return obj;
     }
 
-    public T SpawnWithStartParams(Rigidbody rigidbody)
+    private void Realese(SpawnObject obj)
     {
-        T obj = (T)_pool.Get();
-        Rigidbody newRigidbody = obj.GetComponent<Rigidbody>();
+        obj.LifeTimeEnded -= Realese;
+        OnObjectReleased?.Invoke(obj);
+        _pool.Release((T)obj);
+        ActiveOnSceneChanged?.Invoke(_pool.CountActive);
+    }
 
-        _spawnedAll++;
-        spawnedAllChanged?.Invoke(_spawnedAll);
-        obj.transform.position = rigidbody.transform.position;
-        obj.transform.rotation = rigidbody.transform.rotation;
-        newRigidbody.velocity = rigidbody.velocity;
-        newRigidbody.angularVelocity = rigidbody.angularVelocity;
-        return obj;
+    private T Create(T prefab)
+    {
+        _created++;
+        CreatedChanged?.Invoke(_created);
+
+        return GameObject.Instantiate(prefab);
     }
 }

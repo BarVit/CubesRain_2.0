@@ -1,19 +1,18 @@
 using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(ObjectPool))]
 public class CubesRain : MonoBehaviour
 {
+    [SerializeField] private Cube _prefab;
     [SerializeField] private float _spawnRate = 0.5f;
 
-    private ObjectPool _pool;
     private Spawner<Cube> _cubeSpawner;
     private Coroutine _spawner;
 
-    private void Awake()
+    private void Start()
     {
-        _pool = GetComponent<ObjectPool>();
-        _cubeSpawner = new Spawner<Cube>(_pool);
+        _cubeSpawner = new Spawner<Cube>(_prefab);
+        _cubeSpawner.Initialize();
         _spawner = StartCoroutine(SpawnCube());
     }
 
@@ -28,7 +27,7 @@ public class CubesRain : MonoBehaviour
 
         while (true)
         {
-            Cube cube = _cubeSpawner.Spawn();
+            Cube cube = _cubeSpawner.Get();
 
             cube.Init();
             cube.transform.position = GetSpawnPosition();

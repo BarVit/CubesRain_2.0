@@ -2,23 +2,27 @@ using UnityEngine;
 
 public class CubeToBombReplacer : MonoBehaviour
 {
-    private ObjectPool _pool;
+    [SerializeField] private Bomb _prefab;
+    [SerializeField] private CubesRain _cubesRain;
+
     private Spawner<Bomb> _bombSpawner;
+    private Spawner<Cube> _cubeSpawner;
 
     private void Awake()
     {
-        _pool = GetComponent<ObjectPool>();
-        _bombSpawner = new Spawner<Bomb>(_pool);
+        _bombSpawner = new Spawner<Bomb>(_prefab);
+        _bombSpawner.Initialize();
     }
 
-    private void OnEnable()
+    private void Start()
     {
-        Cube.Destroyed += SpawnBomb;
+        _cubeSpawner = _cubesRain.GetSpawner();
+        _cubeSpawner.OnObjectReleased += SpawnBomb;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
-        Cube.Destroyed += SpawnBomb;
+        _cubeSpawner.OnObjectReleased -= SpawnBomb;
     }
 
     public Spawner<Bomb> GetSpawner()
@@ -26,10 +30,17 @@ public class CubeToBombReplacer : MonoBehaviour
         return _bombSpawner;
     }
 
-    private void SpawnBomb(Rigidbody cube)
+    private void SpawnBomb(SpawnObject cube)
     {
-        Bomb bomb = _bombSpawner.SpawnWithStartParams(cube);
-        
+        Bomb bomb = _bombSpawner.Get();
+        Rigidbody bombRigidbody = bomb.GetComponent<Rigidbody>();
+        Rigidbody cubeRigidbody = cube.GetComponent<Rigidbody>();
+
+        bomb.transform.position = cube.transform.position;
+        bomb.transform.rotation = cube.transform.rotation;
+        bombRigidbody.velocity = cubeRigidbody.velocity;
+        bombRigidbody.angularVelocity = cubeRigidbody.angularVelocity;
+
         bomb.Explode();
     }
 }

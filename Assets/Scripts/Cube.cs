@@ -1,5 +1,4 @@
 using UnityEngine;
-using System;
 using System.Collections;
 
 [RequireComponent(typeof(Rigidbody), typeof(Renderer), typeof(ColorChanger))]
@@ -9,10 +8,7 @@ public class Cube : SpawnObject
     private Material _material;
     private ColorChanger _colorChanger;
     private Coroutine _counter;
-
     private bool _isFirstCollision = true;
-
-    public static event Action<Rigidbody> Destroyed;
 
     private void Awake()
     {
@@ -23,7 +19,7 @@ public class Cube : SpawnObject
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.GetComponent<Plane>() != null && _isFirstCollision)
+        if (_isFirstCollision && collision.collider.TryGetComponent<Plane>(out _))
         {
             _isFirstCollision = false;
             _colorChanger.SetRandomColor(_material);
@@ -44,11 +40,10 @@ public class Cube : SpawnObject
     {
         float minDestroyTime = 2f;
         float maxDestroyTime = 5f;
-        WaitForSeconds waitForSeconds = new(UnityEngine.Random.Range(minDestroyTime, maxDestroyTime));
+        WaitForSeconds waitForSeconds = new(Random.Range(minDestroyTime, maxDestroyTime));
 
         yield return waitForSeconds;
 
-        Destroyed?.Invoke(_rigidbody);
         LifeTimeEnded?.Invoke(this);
     }
 }
