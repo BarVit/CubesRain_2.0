@@ -1,20 +1,33 @@
 using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(Renderer), typeof(Exploder))]
-public class Bomb : SpawnObject
+[RequireComponent(typeof(Renderer), typeof(Exploder), typeof(ColorFader))]
+[RequireComponent(typeof(Rigidbody))]
+public class Bomb : Shape3D
 {
+    private Rigidbody _rigidbody;
     private Material _material;
     private Exploder _exploder;
-    private Coroutine _counter;
-    private float _alpha;
-    private float _startAlpha;
+    private ColorFader _colorFader;
+    private Color _originalColor = Color.black;
 
     private void Awake()
     {
+        _rigidbody = GetComponent<Rigidbody>();
         _material = GetComponent<Renderer>().material;
         _exploder = GetComponent<Exploder>();
-        _startAlpha = _material.color.a;
+        _colorFader = GetComponent<ColorFader>();
+    }
+
+    public override void Init(Shape3D cube)
+    {
+        Rigidbody cubeRigidbody = cube.GetComponent<Rigidbody>();
+
+        transform.position = cube.transform.position;
+        transform.rotation = cube.transform.rotation;
+        _rigidbody.velocity = cubeRigidbody.velocity;
+        _rigidbody.angularVelocity = cubeRigidbody.angularVelocity;
+        _material.color = _originalColor;
     }
 
     public void Explode()
@@ -23,7 +36,8 @@ public class Bomb : SpawnObject
         float maxExplodeTime = 5f;
         float timeToExplode = Random.Range(minExplodeTime, maxExplodeTime);
 
-        _counter = StartCoroutine(CountToExplode(timeToExplode));
+        _colorFader.SetStartParams(_material.color, timeToExplode);
+        Counter = StartCoroutine(CountToExplode(timeToExplode));
     }
 
     private IEnumerator CountToExplode(float time)
@@ -33,8 +47,7 @@ public class Bomb : SpawnObject
         while(timeToExplode < time)
         {
             timeToExplode += Time.deltaTime;
-            _alpha = Mathf.Lerp(_startAlpha, 0, timeToExplode / time);
-            _material.color = new Color(_material.color.r, _material.color.g, _material.color.b, _alpha);
+            _material.color = _colorFader.GetIntermediateColor(timeToExplode);
 
             yield return null;
         }

@@ -1,24 +1,15 @@
 using UnityEngine;
 using System.Collections;
 
-public class CubesRain : MonoBehaviour
+public class CubeSpawner : Spawner
 {
-    [SerializeField] private Cube _prefab;
     [SerializeField] private float _spawnRate = 0.5f;
 
-    private Spawner<Cube> _cubeSpawner;
     private Coroutine _spawner;
 
     private void Start()
     {
-        _cubeSpawner = new Spawner<Cube>(_prefab);
-        _cubeSpawner.Initialize();
         _spawner = StartCoroutine(SpawnCube());
-    }
-
-    public Spawner<Cube> GetSpawner()
-    {
-        return _cubeSpawner;
     }
 
     private IEnumerator SpawnCube()
@@ -27,7 +18,7 @@ public class CubesRain : MonoBehaviour
 
         while (true)
         {
-            Cube cube = _cubeSpawner.Get();
+            Cube cube = (Cube)Pool.Get();
 
             cube.Init();
             cube.transform.position = GetSpawnPosition();

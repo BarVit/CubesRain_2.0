@@ -415,7 +415,7 @@ GameObject:
   - component: {fileID: 223961454}
   - component: {fileID: 223961453}
   m_Layer: 0
-  m_Name: CubesRain
+  m_Name: CubeSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -433,7 +433,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35ac303f0269a4fc2abf72979cf3ee5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _prefab: {fileID: 6906632674891895021, guid: 1805bdb49a1b94f8999ef23c0132cb6b, type: 3}
+  _prefab: {fileID: 0}
   _spawnRate: 0.5
 --- !u!4 &223961454
 Transform:
@@ -595,7 +595,7 @@ GameObject:
   - component: {fileID: 587729896}
   - component: {fileID: 587729899}
   - component: {fileID: 587729898}
-  - component: {fileID: 587729897}
+  - component: {fileID: 587729900}
   m_Layer: 5
   m_Name: CubeSpawner
   m_TagString: Untagged
@@ -629,22 +629,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &587729897
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 587729895}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 369dfe92e9918478481873c0b532083a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TextSpawnedAll: {fileID: 1183754832}
-  TextCreated: {fileID: 850436440}
-  TextActiveOnScene: {fileID: 1318159381}
-  _rain: {fileID: 223961453}
 --- !u!114 &587729898
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -742,6 +726,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 587729895}
   m_CullTransparentMesh: 1
+--- !u!114 &587729900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 587729895}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e69d19777b6442ae955e69b5a2add7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _spawner: {fileID: 223961453}
+  _spawnedAllText: {fileID: 1183754832}
+  _createdText: {fileID: 850436440}
+  _activeOnSceneText: {fileID: 1318159381}
 --- !u!1 &620417478
 GameObject:
   m_ObjectHideFlags: 0
@@ -1756,7 +1756,7 @@ GameObject:
   - component: {fileID: 985410729}
   - component: {fileID: 985410728}
   m_Layer: 0
-  m_Name: CobeToBombRaplacer
+  m_Name: BombSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1774,8 +1774,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c8232b84008e4b5fb14d29d9b778ee0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _prefab: {fileID: 4057499941566525158, guid: db6a5b5ae7829461b8428d1a2e938c73, type: 3}
-  _cubesRain: {fileID: 223961453}
+  _prefab: {fileID: 0}
+  _cubeSpawner: {fileID: 223961453}
 --- !u!4 &985410729
 Transform:
   m_ObjectHideFlags: 0
@@ -2392,13 +2392,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1344036711}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 041f80090672b4bc483d31160b460613, type: 3}
+  m_Script: {fileID: 11500000, guid: 2e69d19777b6442ae955e69b5a2add7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TextSpawnedAll: {fileID: 1194713004}
-  TextCreated: {fileID: 944763216}
-  TextActiveOnScene: {fileID: 950425998}
-  _replacer: {fileID: 985410728}
+  _spawner: {fileID: 985410728}
+  _spawnedAllText: {fileID: 1194713004}
+  _createdText: {fileID: 944763216}
+  _activeOnSceneText: {fileID: 950425998}
 --- !u!1 &1385051202
 GameObject:
   m_ObjectHideFlags: 0

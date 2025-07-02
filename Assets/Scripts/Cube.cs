@@ -2,12 +2,11 @@ using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(Rigidbody), typeof(Renderer), typeof(ColorChanger))]
-public class Cube : SpawnObject
+public class Cube : Shape3D
 {
     private Rigidbody _rigidbody;
     private Material _material;
     private ColorChanger _colorChanger;
-    private Coroutine _counter;
     private bool _isFirstCollision = true;
 
     private void Awake()
@@ -23,11 +22,11 @@ public class Cube : SpawnObject
         {
             _isFirstCollision = false;
             _colorChanger.SetRandomColor(_material);
-            _counter = StartCoroutine(CountToDestroy());
+            Counter = StartCoroutine(CountToDestroy());
         }
     }
 
-    public void Init()
+    public override void Init()
     {
         _isFirstCollision = true;
         _rigidbody.velocity = Vector3.zero;
